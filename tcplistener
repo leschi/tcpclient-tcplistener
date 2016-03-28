@@ -1,0 +1,117 @@
+Imports System.Net.Sockets
+Imports System.Threading
+Imports System.IO
+Imports System.ComponentModel
+Public Class Form1
+    Dim somestring2() As String
+    Dim listener As New TcpListener(55555)
+    Dim client As TcpClient
+    Dim message As String = ""
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Dim listthread As New Thread(New ThreadStart(AddressOf listening))
+        listthread.Start()
+        eins.Hide()
+        zwei.Hide()
+        drei.Hide()
+        vier.Hide()
+        fünf.Hide()
+        sechs.Hide()
+        Label1.Hide()
+        Label3.Hide()
+        Label4.Hide()
+        Label5.Hide()
+        Label6.Hide()
+        Label7.Hide()
+
+    End Sub
+
+    Private Sub listening()
+        listener.Start()
+
+    End Sub
+
+    Private Sub Form1_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        listener.Stop()
+    End Sub
+
+    Private Sub Timer1_Tick(sender As Object, e As EventArgs) Handles Timer1.Tick
+        If listener.Pending = True Then
+            message = ""
+            client = listener.AcceptTcpClient()
+            Dim reader As New StreamReader(client.GetStream)
+            While reader.Peek > -1
+                message = message + Convert.ToChar(reader.Read()).ToString
+            End While
+            somestring2 = message.Split(".")
+            For i = 0 To somestring2.Length - 6
+                Me.eins.Text = somestring2(i)
+            Next
+            For i = 0 To somestring2.Length - 5
+                Me.zwei.Text = somestring2(i)
+            Next
+            For i = 0 To somestring2.Length - 4
+                Me.drei.Text = somestring2(i)
+            Next
+            For i = 0 To somestring2.Length - 3
+                Me.vier.Text = somestring2(i)
+            Next
+            For i = 0 To somestring2.Length - 2
+                Me.fünf.Text = somestring2(i)
+            Next
+            For i = 0 To somestring2.Length - 1
+                Me.sechs.Text = somestring2(i)
+            Next
+            If eins.Text = "login" Then
+                Dim Daten_user As IO.StreamReader = New IO.StreamReader(Application.StartupPath & "/user/" & zwei.Text & ".txt")
+                Dim userpass As String = Daten_user.ReadLine()
+                Dim rechte As String = Daten_user.ReadLine()
+                Daten_user.Close()
+                If userpass = drei.Text Then
+                    Dim Daten_Speichern As IO.StreamWriter = New IO.StreamWriter(Application.StartupPath & "/Supporter ROK/" & zwei.Text & ".txt")
+                    Daten_Speichern.WriteLine("true")
+                    Daten_Speichern.WriteLine(rechte)
+                    Daten_Speichern.Close()
+
+                End If
+            ElseIf eins.Text = "befehl" Then
+                If zwei.Text = "arma3" Then
+                    befehlarma()
+                ElseIf zwei.Text = "rok" Then
+                    befehlrok()
+                End If
+
+            End If
+        End If
+    End Sub
+
+    Sub login()
+
+    End Sub
+
+    Sub befehlrok()
+        Dim befehl As String = drei.Text
+        If befehl = "start" Then
+            Process.Start(Application.StartupPath & "\Supporter ROK\start.bat")
+        ElseIf befehl = "restart"
+            Process.Start(Application.StartupPath & "\Supporter ROK\restart.bat")
+        ElseIf befehl = "stop"
+            Process.Start(Application.StartupPath & "\Supporter ROK\stop.bat")
+        End If
+    End Sub
+
+    Sub befehlarma()
+        Dim befehl As String = drei.Text
+        If befehl = "start" Then
+            Process.Start(Application.StartupPath & "\Supporter Arma3\start.bat")
+        ElseIf befehl = "restart"
+            Process.Start(Application.StartupPath & "\Supporter Arma3\restart.bat")
+        ElseIf befehl = "stop"
+            Process.Start(Application.StartupPath & "\Supporter Arma3\stop.bat")
+        End If
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        newusr.Visible = True
+    End Sub
+End Class
