@@ -1,0 +1,16 @@
+Imports System.Net.Sockets
+Imports System.IO
+Public Class Form1
+    Dim client As TcpClient
+    Dim mesage As String = ""
+    Dim ip As String = ""
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+
+        Dim name As String = usrnme.Text
+        Dim pw As String = usrpw.Text
+        client = New TcpClient(ip, 44)
+        Dim writer As New StreamWriter(client.GetStream())
+        writer.Write("login." & name & "." & pw & ".0.0.0")
+        writer.Flush()
+    End Sub
+End Class
